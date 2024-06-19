@@ -17,16 +17,33 @@ symbol_count = {
 
 
 def get_slot_machine_spin(rows, cols, symbols):
-    all_symbols = []
+    symbol_pool = []
 
     for symbol, symbol_value in symbols.items():
         for _ in range(symbol_value):
-            all_symbols.append(symbol)
+            symbol_pool.append(symbol)
 
-    columns = [[], [], []]
-    for col in range(cols):
-        for row in range(rows):
-            value = random.choice(all_symbols)
+    columns = []
+    for _ in range(cols):
+        col = []
+        current_symbols = symbol_pool[:]
+        for _ in range(rows):
+            value = random.choice(current_symbols)
+            current_symbols.remove(value)
+            col.append(value)
+
+        columns.append(col)
+
+    return columns
+
+
+def print_slot_machines(columns):
+    for row in range(len(columns[0])):
+        for i, column in enumerate(columns):
+            if i != len(columns) - 1:
+                print(column[row], end="|")
+            else:
+                print(column[row])
 
 
 def deposit():
@@ -92,6 +109,9 @@ def main():
 
     total_bet = bet * lines
     print(f"You are betting #{bet} on {lines}. Total bet is equal to: ${total_bet}")
+
+    slots = get_slot_machine_spin(ROWS, COLS, symbol_count)
+    print_slot_machines(slots)
 
 
 if __name__ == "__main__":
