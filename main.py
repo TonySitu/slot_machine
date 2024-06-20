@@ -15,6 +15,13 @@ symbol_count = {
     "D": 8
 }
 
+symbol_values = {
+    "A": 5,
+    "B": 4,
+    "C": 3,
+    "D": 2
+}
+
 
 def get_slot_machine_spin(rows, cols, symbols):
     symbol_pool = []
@@ -102,16 +109,46 @@ def check_bet(balance, lines):
             return bet
 
 
-def main():
-    balance = deposit()
+def check_winnings(matrix, lines, bet, values):
+    winnings = 0
+    winning_lines = []
+    for line in range(lines):
+        symbol = matrix[0][line]
+        for col in matrix:
+            symbol_to_check = col[line]
+            if symbol != symbol_to_check:
+                break
+        else:
+            winnings += values[symbol] * bet
+            winning_lines.append(line + 1)
+
+    return winnings, winning_lines
+
+
+def game(balance):
     lines = get_number_of_lines()
     bet = check_bet(balance, lines)
 
     total_bet = bet * lines
+    balance -= total_bet
+
     print(f"You are betting #{bet} on {lines}. Total bet is equal to: ${total_bet}")
 
     slots = get_slot_machine_spin(ROWS, COLS, symbol_count)
     print_slot_machines(slots)
+    winnings, winning_lines = check_winnings(slots, lines, bet, symbol_values)
+    print(f"You won ${winnings} on lines: ", *winning_lines)
+    balance += winnings
+    return balance
+
+
+def main():
+    balance = deposit()
+    while True:
+        spin = input("Press enter to spin (q to quit).")
+        if spin == "q":
+            break
+        print(f"You left with ${game(balance)}")
 
 
 if __name__ == "__main__":
